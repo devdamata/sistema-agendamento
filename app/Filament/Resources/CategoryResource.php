@@ -1,26 +1,24 @@
 <?php
+declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
 use Filament\Forms;
+use Filament\Tables;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use Filament\Tables;
 use App\Models\Category;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 use Filament\Resources\Resource;
 use App\Filament\Resources\CategoryResource\Pages;
-use App\Filament\Resources\CategoryResource\RelationManagers;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Str;
 
 class CategoryResource extends Resource
 {
     protected static ?string $model = Category::class;
 
-    protected static ?string $navigationGroup = 'Categorias';
+    protected static ?string $navigationGroup = 'Produtos';
     protected static ?string $activeNavigationIcon = 'heroicon-s-clipboard-document-list';
     protected static ?string $modelLabel = "Categoria";
 
