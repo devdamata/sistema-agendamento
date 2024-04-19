@@ -5,29 +5,39 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
-use Filament\Forms\Get;
 use Filament\Forms\Set;
-use App\Models\Category;
+use Filament\Forms\Get;
+use App\Models\Service;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Filament\Resources\Resource;
-use App\Filament\Resources\CategoryResource\Pages;
+use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\ServiceResource\Pages;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class CategoryResource extends Resource
+class ServiceResource extends Resource
 {
-    protected static ?string $model = Category::class;
+    protected static ?string $model = Service::class;
 
-    protected static ?string $navigationGroup = 'Categorias';
-    protected static ?string $activeNavigationIcon = 'heroicon-s-clipboard-document-list';
-    protected static ?string $modelLabel = "Categoria";
-
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static ?string $navigationGroup = 'Serviços';
+    protected static ?string $activeNavigationIcon = 'heroicon-c-cloud';
+    protected static ?string $pluralModelLabel = "Serviços";
+    protected static ?string $modelLabel = "Serviço";
+    protected static ?string $navigationIcon = 'heroicon-c-cloud-arrow-up';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
+                Forms\Components\Select::make('category_id')
+                    ->relationship('category', 'name')
+                    ->label('Categoria')
+                    ->options(
+                        \App\Models\Category::where('type', 'service')->get()
+                            ->mapWithKeys(fn ($category) => [$category->id => $category->name])
+                    )
+                    ->required(),
                 Forms\Components\TextInput::make('name')
                     ->label('Nome')
                     ->required()
@@ -42,24 +52,21 @@ class CategoryResource extends Resource
                     ->maxLength(255),
                 Forms\Components\TextInput::make('slug')
                     ->required()
-                    ->readOnly()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('price')
+                    ->label('Preço')
+                    ->required()
+                    ->numeric()
+                    ->prefix('$'),
                 Forms\Components\FileUpload::make('image')
                     ->label('Imagem')
-                    ->image()
-                    ->directory('categories'),
-                Forms\Components\Select::make('type')
-                    ->label('Tipo')
-                    ->required()
-                    ->options([
-                        'service' => 'Serviço',
-                        'product' => 'Produto',
-                    ]),
+                    ->image(),
                 Forms\Components\Textarea::make('description')
                     ->label('Descrição')
                     ->columnSpanFull(),
-                Forms\Components\Toggle::make('is_active')
-                    ->label('Ativo')
+                Forms\Components\Toggle::make('visibility')
+                    ->label('Visibilidade')
+                    ->default(true)
                     ->required(),
             ]);
     }
@@ -68,18 +75,23 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('category.name')
+                    ->label('Categoria')
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nome')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('slug')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('price')
+                    ->label('Preço')
+                    ->money()
+                    ->sortable(),
                 Tables\Columns\ImageColumn::make('image')
                     ->label('Imagem'),
-                Tables\Columns\TextColumn::make('type')
-                    ->label('Tipo')
-                    ->searchable(),
-                Tables\Columns\IconColumn::make('is_active')
-                    ->label('Ativo')
+                Tables\Columns\IconColumn::make('visibility')
+                    ->label('Visível')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Criado em')
@@ -120,14 +132,9 @@ class CategoryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCategories::route('/'),
-            'create' => Pages\CreateCategory::route('/create'),
-            'edit' => Pages\EditCategory::route('/{record}/edit'),
+            'index' => Pages\ListServices::route('/'),
+            'create' => Pages\CreateService::route('/create'),
+            'edit' => Pages\EditService::route('/{record}/edit'),
         ];
-    }
-
-    public static function getNavigationBadge(): ?string
-    {
-        return (string) static::getModel()::count();
     }
 }
