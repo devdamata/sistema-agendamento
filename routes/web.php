@@ -13,4 +13,32 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/',\App\Livewire\AppointmentsCalendar::class);
+/*
+| Rotas sem controlador chamando direto a página, sem processamento de dados.
+*/
+Route::get('/', function () {
+  return view('clientHome');
+});
+/*
+| Rotas sem controlador chamando direto a página, sem processamento de dados.
+*/
+
+
+/*
+| Rotas com controlador 
+*/
+Route::get('/teste',\App\Livewire\AppointmentsCalendar::class);
+/*
+| Rotas com controlador 
+*/
+
+
+/*
+| Rotas TESTES
+*/
+Route::get('/home', function () {
+  return view('welcome');
+});
+/*
+| Rotas TESTES
+*/

@@ -1,3 +1,5 @@
 <div>
-    <livewire:appointments-calendar/>
+    <!-- <livewire:appointments-calendar/> -->
+
+
 </div>
